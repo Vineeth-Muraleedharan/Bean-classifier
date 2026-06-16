@@ -23,7 +23,7 @@ st.set_page_config(
 
 # Title
 st.title(" Dry Bean Type Classifier")
-st.markdown(f"**Developed by:** {VINEETH_MURALEEDHARAN}")
+st.markdown(f"**Developed by:** {YOUR_NAME}")
 st.markdown("Enter the physical measurements of a bean to predict its type.")
 st.markdown("---")
 
