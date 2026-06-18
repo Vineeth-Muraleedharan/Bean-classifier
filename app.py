@@ -93,4 +93,4 @@ col_a, col_b, col_c = st.columns(3)
 with col_a:
     st.markdown(f"**👤 Developer:** {YOUR_NAME}")
 with col_b:
-    st.markdown(f"**💻 [GitHub Repo]({https://github.com/Vineeth-Muraleedharan/Bean-classifier})**")
+    st.markdown(f"**💻 [GitHub Repo]({GITHUB_LINK})**")
