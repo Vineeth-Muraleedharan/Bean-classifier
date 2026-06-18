@@ -25,6 +25,23 @@ bean_info = {
     'SIRA'     : {'color': '🔵', 'desc': 'Medium, oval-shaped pale bean'}
 }
 
+# ShapeFactor dropdown options
+sf1_options = {"Low (0.003)"   : 0.003,
+               "Medium (0.007)": 0.007,
+               "High (0.010)"  : 0.010}
+
+sf2_options = {"Low (0.001)"   : 0.001,
+               "Medium (0.003)": 0.003,
+               "High (0.006)"  : 0.006}
+
+sf3_options = {"Low (0.45)"    : 0.45,
+               "Medium (0.70)" : 0.70,
+               "High (0.90)"   : 0.90}
+
+sf4_options = {"Low (0.95)"    : 0.95,
+               "Medium (0.97)" : 0.97,
+               "High (0.99)"   : 0.99}
+
 # Page config
 st.set_page_config(
     page_title = "🫘 Bean Classifier",
@@ -32,44 +49,110 @@ st.set_page_config(
     layout     = "wide"
 )
 
-# Custom CSS
+# Custom CSS - Minimalist bean themed background
 st.markdown("""
     <style>
+
+    /* Main background */
+    .stApp {
+        background: linear-gradient(135deg, #0d1b0e 0%, #0a1628 50%, #0d1b0e 100%);
+    }
+
+    /* Subtle bean pattern overlay */
+    .stApp::before {
+        content: "🫘";
+        position: fixed;
+        font-size: 200px;
+        opacity: 0.03;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Header */
     .main-header {
         text-align: center;
-        padding: 1rem;
-        background: linear-gradient(90deg, #1a1a2e, #16213e);
-        border-radius: 10px;
-        margin-bottom: 1rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #1a2f1a, #0d2137);
+        border: 1px solid #2d5a27;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
     }
+
+    /* Result box */
     .result-box {
         text-align: center;
-        padding: 1.5rem;
-        border-radius: 10px;
-        background: linear-gradient(90deg, #0f3460, #533483);
+        padding: 2rem;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #1a2f1a, #0d2137);
+        border: 1px solid #2d5a27;
         margin: 1rem 0;
     }
+
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: #1a2f1a !important;
+        border-radius: 8px !important;
+        border: 1px solid #2d5a27 !important;
+    }
+
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        color: #4CAF50 !important;
+        font-size: 1.2rem !important;
+    }
+
+    /* Button */
+    .stButton > button {
+        background: linear-gradient(90deg, #2d5a27, #1a3a6e) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-size: 1.1rem !important;
+        font-weight: bold !important;
+        padding: 0.75rem !important;
+    }
+
+    .stButton > button:hover {
+        background: linear-gradient(90deg, #3d7a37, #2a4a8e) !important;
+        transform: scale(1.01);
+    }
+
+    /* Slider color */
+    [data-testid="stSlider"] > div > div > div {
+        background: #2d5a27 !important;
+    }
+
+    /* Select box */
+    [data-testid="stSelectbox"] > div > div {
+        background: #1a2f1a !important;
+        border: 1px solid #2d5a27 !important;
+        border-radius: 8px !important;
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
 # Header
 st.markdown("""
     <div class='main-header'>
-        <h1>🫘 Dry Bean Type Classifier</h1>
-        <p>Predict bean type from physical measurements using Machine Learning</p>
+        <h1 style='color: #7CFC00;'>🫘 Dry Bean Type Classifier</h1>
+        <p style='color: #aaa;'>Predict bean variety from physical measurements using SVM</p>
     </div>
 """, unsafe_allow_html=True)
 
 # Top metrics
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("🎯 Model",     "SVM (RBF)")
-col2.metric("📊 Accuracy",  MODEL_ACC)
-col3.metric("🫘 Classes",   "7")
-col4.metric("📐 Features",  "16")
+col1.metric("🎯 Model",    "SVM (RBF)")
+col2.metric("📊 Accuracy", MODEL_ACC)
+col3.metric("🫘 Classes",  "7")
+col4.metric("📐 Features", "16")
 
 st.markdown("---")
 
-# Input section using expanders
+# Input section
 st.subheader("📐 Enter Bean Measurements")
 
 with st.expander("📏 Size Features", expanded=True):
@@ -88,22 +171,26 @@ with st.expander("📏 Size Features", expanded=True):
 with st.expander("🔵 Shape Features", expanded=True):
     col1, col2 = st.columns(2)
     with col1:
-        Extent       = st.slider("Extent",       0.50,   0.90,   0.75,   0.001)
-        Solidity     = st.slider("Solidity",     0.90,   1.00,   0.98,   0.001)
-        roundness    = st.slider("Roundness",    0.40,   1.00,   0.85,   0.001)
-        Compactness  = st.slider("Compactness",  0.60,   1.00,   0.90,   0.001)
+        Extent      = st.slider("Extent",      0.50, 0.90, 0.75, 0.001)
+        Solidity    = st.slider("Solidity",    0.90, 1.00, 0.98, 0.001)
+        roundness   = st.slider("Roundness",   0.40, 1.00, 0.85, 0.001)
+        Compactness = st.slider("Compactness", 0.60, 1.00, 0.90, 0.001)
     with col2:
-        ShapeFactor1 = st.slider("ShapeFactor1", 0.002,  0.012,  0.007,  0.0001)
-        ShapeFactor2 = st.slider("ShapeFactor2", 0.0005, 0.007,  0.003,  0.0001)
-        ShapeFactor3 = st.slider("ShapeFactor3", 0.40,   1.00,   0.85,   0.001)
-        ShapeFactor4 = st.slider("ShapeFactor4", 0.94,   1.00,   0.99,   0.0001)
+        SF1_label = st.selectbox("ShapeFactor1", list(sf1_options.keys()), index=1)
+        SF2_label = st.selectbox("ShapeFactor2", list(sf2_options.keys()), index=1)
+        SF3_label = st.selectbox("ShapeFactor3", list(sf3_options.keys()), index=1)
+        SF4_label = st.selectbox("ShapeFactor4", list(sf4_options.keys()), index=2)
+
+        ShapeFactor1 = sf1_options[SF1_label]
+        ShapeFactor2 = sf2_options[SF2_label]
+        ShapeFactor3 = sf3_options[SF3_label]
+        ShapeFactor4 = sf4_options[SF4_label]
 
 st.markdown("---")
 
 # Predict button
 if st.button("🔍 Predict Bean Type", use_container_width=True, type="primary"):
 
-    # Prepare input
     input_data = np.array([[
         Area, Perimeter, MajorAxisLength, MinorAxisLength,
         AspectRation, Eccentricity, ConvexArea, EquivDiameter,
@@ -111,27 +198,22 @@ if st.button("🔍 Predict Bean Type", use_container_width=True, type="primary")
         ShapeFactor1, ShapeFactor2, ShapeFactor3, ShapeFactor4
     ]])
 
-    # Apply log transformation
-    input_data = np.log1p(input_data)
-
-    # Scale input
+    input_data   = np.log1p(input_data)
     input_scaled = scaler.transform(input_data)
 
-    # Predict
     prediction       = model.predict(input_scaled)
     prediction_proba = model.predict_proba(input_scaled)
     predicted_class  = le.inverse_transform(prediction)[0]
     confidence       = prediction_proba.max() * 100
 
-    # Result box
     emoji = bean_info[predicted_class]['color']
     desc  = bean_info[predicted_class]['desc']
 
     st.markdown(f"""
         <div class='result-box'>
-            <h2>{emoji} Predicted Bean Type : {predicted_class}</h2>
-            <p>{desc}</p>
-            <h3>📊 Confidence : {confidence:.2f}%</h3>
+            <h2 style='color: #7CFC00;'>{emoji} Predicted Bean Type : {predicted_class}</h2>
+            <p style='color: #aaa;'>{desc}</p>
+            <h3 style='color: #4CAF50;'>📊 Confidence : {confidence:.2f}%</h3>
         </div>
     """, unsafe_allow_html=True)
 
@@ -141,8 +223,8 @@ if st.button("🔍 Predict Bean Type", use_container_width=True, type="primary")
 
     col1, col2, col3, col4 = st.columns(4)
     col5, col6, col7, _    = st.columns(4)
-
     cols = [col1, col2, col3, col4, col5, col6, col7]
+
     for i, (cls, prob) in enumerate(proba_dict.items()):
         cols[i].metric(
             label = f"{bean_info[cls]['color']} {cls}",
